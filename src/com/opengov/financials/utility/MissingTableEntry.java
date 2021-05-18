@@ -34,9 +34,10 @@ public class MissingTableEntry {
 
 	public static void main(String[] args) throws InterruptedException {
 
-		String fileName = "c:\\temp\\missingTable.txt";
+		String fileName = "c:\\temp\\MissingTableFromScript.txt";
 		String filetableFromDatbase = "c:\\temp\\TablefromDB.txt";
 		String filetableFromScript = "c:\\temp\\TablefromScript.txt";
+		String fileMatchedTables = "c:\\temp\\MatchedTablesfromScript.txt";
 
 		List<String> tableFromDatbase = new ArrayList<String>();
 		List<String> tableFromScript = new ArrayList<String>();
@@ -45,21 +46,42 @@ public class MissingTableEntry {
 
 		Connection connection = missingTableEntry.initDataBaseConnection();
 		tableFromDatbase.addAll(missingTableEntry.checkTableFromDatabase(connection));
-		writeUnicodeJava(filetableFromDatbase, tableFromDatbase);
+		writeUnicodeJavaInputList(filetableFromDatbase, tableFromDatbase);
 
 		tableFromScript.addAll(missingTableEntry.readScriptFileFromFolder());
-		writeUnicodeJava(filetableFromScript, tableFromScript);
+		writeUnicodeJavaInputList(filetableFromScript, tableFromScript);
 
 		List<String> sortedTableFromScript = tableFromScript.stream().sorted().collect(Collectors.toList());
 		List<String> sortedtableFromDatbase = tableFromDatbase.stream().sorted().collect(Collectors.toList());
 
 		List<String> differences = new ArrayList<>(
 				CollectionUtils.subtract(sortedTableFromScript, sortedtableFromDatbase));
-		writeUnicodeJava(fileName, differences);
-
+		writeUnicodeJavaInputList(fileName, differences);
+		
+		Set<String> tablesFoundInDB = sortedTableFromScript.stream()
+				  .distinct()
+				  .filter(sortedtableFromDatbase::contains)
+				  .collect(Collectors.toSet());
+		
+		writeUnicodeJavaInputSet(fileMatchedTables, tablesFoundInDB);
 	}
 
-	public static void writeUnicodeJava(String fileName, List<String> lines) {
+	public static void writeUnicodeJavaInputList(String fileName, List<String> lines) {
+
+		try (FileWriter fw = new FileWriter(new File(fileName), StandardCharsets.UTF_8);
+				BufferedWriter writer = new BufferedWriter(fw)) {
+			for (String line : lines) {
+				writer.append(line);
+				writer.newLine();
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	public static void writeUnicodeJavaInputSet(String fileName, Set<String> lines) {
 
 		try (FileWriter fw = new FileWriter(new File(fileName), StandardCharsets.UTF_8);
 				BufferedWriter writer = new BufferedWriter(fw)) {
@@ -80,7 +102,7 @@ public class MissingTableEntry {
 		List<String> listOfTables = new ArrayList<String>();
 		Set<String> uniqueTables = new HashSet<String>();
 
-		ExecutorService executorService = Executors.newFixedThreadPool(20);
+		ExecutorService executorService = Executors.newFixedThreadPool(30);
 		executorService.submit(() -> {
 			try {
 				File directoryPath = new File("E:\\\\stw\\\\stw_java\\\\scripts\\\\");
