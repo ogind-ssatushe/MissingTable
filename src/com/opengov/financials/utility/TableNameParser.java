@@ -3,46 +3,14 @@
  */
 package com.opengov.financials.utility;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class TableNameParser {
-
-	private static final int NO_INDEX = -1;
-	private static final String SPACE = " ";
-	private static final String REGEX_SPACE = "\\s+";
-
-	private static final String TOKEN_START = "/*+";
-	private static final String TOKEN_END = "*/";
-	private static final String TOKEN_SINGLE_LINE_COMMENT = "--";
-	private static String TOKEN_NEWLINE = "\\r\\n|\\r|\\n|\\n\\r";
-	private static final String TOKEN_SEMI_COLON = ";";
-	private static final String TOKEN_PARAN_START = "(";
-	private static final String TOKEN_COMMA = ",";
-	private static final String TOKEN_SET = "set";
-	private static final String TOKEN_OF = "of";
-	private static final String TOKEN_DUAL = "dual";
-	private static final String TOKEN_DELETE = "delete";
-	private static final String TOKEN_CREATE = "create";
-	private static final String TOKEN_INDEX = "index";
-	private static final String TOKEN_ASTERICK = "*";
-
-	private static final String KEYWORD_JOIN = "join";
-	private static final String KEYWORD_INTO = "into";
-	private static final String KEYWORD_TABLE = "table";
-	private static final String KEYWORD_FROM = "from";
-	private static final String KEYWORD_USING = "using";
-	private static final String KEYWORD_UPDATE = "update";
-
-	private static final List<String> concerned = Arrays.asList(KEYWORD_TABLE, KEYWORD_INTO, KEYWORD_JOIN,
-			KEYWORD_USING, KEYWORD_UPDATE);
-	private static final List<String> ignored = Arrays.asList(TOKEN_PARAN_START, TOKEN_SET, TOKEN_OF, TOKEN_DUAL);
+public final class TableNameParser implements DB2Constant {
 
 	private Map<String, String> tables = new HashMap<String, String>();
 
